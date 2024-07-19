@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -160,10 +162,12 @@ public class CotizacionVentaImpl implements ICotizacionVService {
     @Override
     public CotizacionVentaDTO calculateMontos(CotizacionVentaDTO cotizacionVentaDTO) {
 
-        Float montoproducto = 0.0f;
-        Float montototal = 0.0f;
+
+        BigDecimal montoproducto = BigDecimal.ZERO;
+        BigDecimal montototal = BigDecimal.ZERO;
         List<DetalleCotizacionVentaDTO> detalles = new ArrayList<>();
-        for (DetalleCotizacionVentaDTO detalle: cotizacionVentaDTO.getDetalles()) {
+
+        for (DetalleCotizacionVentaDTO detalle : cotizacionVentaDTO.getDetalles()) {
             String url = UriComponentsBuilder.fromHttpUrl("http://localhost:9000/api/almacen/producto/buscar-producto")
                     .queryParam("nombre", detalle.getProducto())
                     .queryParam("concentracion", detalle.getConcentracion())
@@ -172,15 +176,19 @@ public class CotizacionVentaImpl implements ICotizacionVService {
             System.out.println("URL: " + url);
             Producto producto = (Producto) restTemplate.getForObject(url, Producto.class);
             if (producto != null && producto.getPrice() != null) {
+                BigDecimal precioProducto = BigDecimal.valueOf(producto.getPrice());
+                BigDecimal cantidad = BigDecimal.valueOf(detalle.getCantidad());
+                BigDecimal totalDetalle = precioProducto.multiply(cantidad);
+
                 DetalleCotizacionVentaDTO detalleDto = DetalleCotizacionVentaDTO.builder()
                         .idcotizacion(cotizacionVentaDTO.getIdcotizacion())
                         .producto(detalle.getProducto())
                         .concentracion(detalle.getConcentracion())
                         .cantidad(detalle.getCantidad())
-                        .total(producto.getPrice() * detalle.getCantidad())
+                        .total(totalDetalle.floatValue())
                         .build();
                 detalles.add(detalleDto);
-                montoproducto += producto.getPrice() * detalle.getCantidad();
+                montoproducto = montoproducto.add(totalDetalle);
             } else {
                 // Manejar el caso donde el producto no se encuentra
                 // Puedes lanzar una excepción o manejar de otra manera apropiada
@@ -188,13 +196,17 @@ public class CotizacionVentaImpl implements ICotizacionVService {
             }
         }
 
-        Float montoimpuesto = montoproducto/18;
-        montototal = montoimpuesto + montoproducto;
+        BigDecimal montoimpuesto = montoproducto.divide(BigDecimal.valueOf(18), RoundingMode.HALF_UP);
+        montototal = montoimpuesto.add(montoproducto);
+
+        montoproducto = montoproducto.setScale(2, RoundingMode.HALF_UP);
+        montoimpuesto = montoimpuesto.setScale(2, RoundingMode.HALF_UP);
+        montototal = montototal.setScale(2, RoundingMode.HALF_UP);
 
         CotizacionVentaDTO dto = CotizacionVentaDTO.builder()
-                .montoproducto(montoproducto)
-                .montoimpuesto(montoimpuesto)
-                .montototal(montototal)
+                .montoproducto(montoproducto.floatValue())
+                .montoimpuesto(montoimpuesto.floatValue())
+                .montototal(montototal.floatValue())
                 .detalles(detalles)
                 .build();
 
