@@ -132,7 +132,7 @@ public class CotizacionCImpl implements ICotizacionCService{
             try {
                 System.out.println("cotizacion: aaa " + cotizacion.getIdSolicitudCotizacion() + " idProveedor aaa: " + cotizacion.getIdProveedor());
                 String idProveedor = cotizacion.getIdProveedor();
-                Proveedor proveedor = restTemplate.getForObject("http://localhost:9000/api/proveedor/proveedor/get/" + idProveedor, Proveedor.class);
+                Proveedor proveedor = restTemplate.getForObject("https://service-gateway-bbraun.azurewebsites.net/api/proveedor/proveedor/get/" + idProveedor, Proveedor.class);
                 if (proveedor != null) {
                     CotizacionPorSolicitudDto cotizacionDTO = CotizacionPorSolicitudDto.builder()
                             .idsolicitudcompra(idSolicitudCompra)
@@ -179,7 +179,7 @@ public class CotizacionCImpl implements ICotizacionCService{
 
     @Override
     public CotizacionCompra updateCotizacionCompra(CotizacionPorSolicitudDto dto) {
-        Proveedor proveedor = restTemplate.getForObject("http://localhost:9000/api/proveedor/proveedor/getByNombre/"+dto.getNombreProveedor(), Proveedor.class);
+        Proveedor proveedor = restTemplate.getForObject("https://service-gateway-bbraun.azurewebsites.net/api/proveedor/proveedor/getByNombre/"+dto.getNombreProveedor(), Proveedor.class);
 
         SolicitudCotizacionCompra solicitud = solicitudCotizacionRepository.findByIdSolicitudCompra(dto.getIdsolicitudcompra());
 
@@ -228,7 +228,7 @@ public class CotizacionCImpl implements ICotizacionCService{
     }
 
     private void updateEstadoSolicitud(String idSolictud, Integer estado){
-        String url = "http://localhost:9000/api/doc-compra/solicitud/actualizarestado/{idSolicitud}/{estado}";
+        String url = "https://service-gateway-bbraun.azurewebsites.net/api/doc-compra/solicitud/actualizarestado/{idSolicitud}/{estado}";
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);

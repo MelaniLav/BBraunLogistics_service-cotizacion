@@ -88,7 +88,7 @@ public class CotizacionVentaImpl implements ICotizacionVService {
             List<DetalleCotizacionVenta> detalles = detalleCotizacionVentaRepository.findAllByIdcotizacion(cotizacionVenta.getId_cotizacion());
             List<DetalleCotizacionVentaDTO> details_dto = new ArrayList<>();
             for(DetalleCotizacionVenta detail: detalles){
-                Producto producto = restTemplate.getForObject("http://localhost:9000/api/almacen/producto/buscar-producto/"+detail.getIdproducto(),Producto.class);
+                Producto producto = restTemplate.getForObject("https://service-gateway-bbraun.azurewebsites.net/api/almacen/producto/buscar-producto/"+detail.getIdproducto(),Producto.class);
                 DetalleCotizacionVentaDTO detallaDto = DetalleCotizacionVentaDTO.builder()
                         .idcotizacion(detail.getIdcotizacion())
                         .producto(producto.getName())
@@ -112,7 +112,7 @@ public class CotizacionVentaImpl implements ICotizacionVService {
             List<DetalleCotizacionVenta> detalles = detalleCotizacionVentaRepository.findAllByIdcotizacion(idcotizacion);
             List<DetalleDtoPDF> detalleDtos = new ArrayList<>();
             for(DetalleCotizacionVenta detalle: detalles){
-                Producto producto = restTemplate.getForObject("http://localhost:9000/api/almacen/producto/buscar-producto/"+detalle.getIdproducto(),Producto.class);
+                Producto producto = restTemplate.getForObject("https://service-gateway-bbraun.azurewebsites.net/api/almacen/producto/buscar-producto/"+detalle.getIdproducto(),Producto.class);
                 DetalleDtoPDF detalleDto = converterToDto.converterDetallVToDto(detalle,producto);
                 detalleDtos.add(detalleDto);
             }
@@ -137,7 +137,7 @@ public class CotizacionVentaImpl implements ICotizacionVService {
             List<DetalleCotizacionVenta> detalles = new ArrayList<>();
             detalles = detalleCotizacionVentaRepository.findAllByIdcotizacion(cotizacionVentas.get(i).getId_cotizacion());
             for (int j = 0; j < detalles.size() ; j++) {
-                Producto producto = restTemplate.getForObject("http://localhost:9000/api/almacen/producto/buscar-producto/"+detalles.get(j).getIdproducto(),Producto.class);
+                Producto producto = restTemplate.getForObject("https://service-gateway-bbraun.azurewebsites.net/api/almacen/producto/buscar-producto/"+detalles.get(j).getIdproducto(),Producto.class);
                 DetalleDtoPDF detalleDto = converterToDto.converterDetallVToDto(detalles.get(j),producto);
                 detalleDtos.add(detalleDto);
             }
@@ -168,7 +168,7 @@ public class CotizacionVentaImpl implements ICotizacionVService {
         List<DetalleCotizacionVentaDTO> detalles = new ArrayList<>();
 
         for (DetalleCotizacionVentaDTO detalle : cotizacionVentaDTO.getDetalles()) {
-            String url = UriComponentsBuilder.fromHttpUrl("http://localhost:9000/api/almacen/producto/buscar-producto")
+            String url = UriComponentsBuilder.fromHttpUrl("https://service-gateway-bbraun.azurewebsites.net/api/almacen/producto/buscar-producto")
                     .queryParam("nombre", detalle.getProducto())
                     .queryParam("concentracion", detalle.getConcentracion())
                     .toUriString();

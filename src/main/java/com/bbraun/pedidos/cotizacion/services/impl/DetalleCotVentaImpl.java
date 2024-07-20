@@ -30,13 +30,13 @@ public class DetalleCotVentaImpl implements IDetalleCotiVenta {
 
     @Override
     public Producto findDetailsProduct(String idProducto) {
-        Producto producto = restTemplate.getForObject("http://localhost:9000/api/almacen/producto/buscar-producto/"+idProducto, Producto.class);
+        Producto producto = restTemplate.getForObject("https://service-gateway-bbraun.azurewebsites.net/api/almacen/producto/buscar-producto/"+idProducto, Producto.class);
         return producto;
     }
 
     @Override
     public void delete(DetalleCotizacionVentaDTO dto) {
-        String url = UriComponentsBuilder.fromHttpUrl("http://localhost:9000/api/almacen/producto/buscar-producto")
+        String url = UriComponentsBuilder.fromHttpUrl("https://service-gateway-bbraun.azurewebsites.net/api/almacen/producto/buscar-producto")
                 .queryParam("nombre", dto.getProducto())
                 .queryParam("concentracion", dto.getConcentracion())
                 .toUriString();

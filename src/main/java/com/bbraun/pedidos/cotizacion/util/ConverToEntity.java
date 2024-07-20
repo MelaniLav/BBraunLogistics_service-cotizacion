@@ -40,7 +40,7 @@ public class ConverToEntity {
 
     public List<DetalleCotizacionVenta> converToEntityDetalleVenta(List<DetalleCotizacionVentaDTO> dto, CotizacionVenta cotizacionVenta) {
         return dto.stream().map(detalle -> {
-            String url = UriComponentsBuilder.fromHttpUrl("http://localhost:9000/api/almacen/producto/buscar-producto")
+            String url = UriComponentsBuilder.fromHttpUrl("https://service-gateway-bbraun.azurewebsites.net/api/almacen/producto/buscar-producto")
                     .queryParam("nombre", detalle.getProducto())
                     .queryParam("concentracion", detalle.getConcentracion())
                     .toUriString();
